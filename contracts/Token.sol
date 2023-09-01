@@ -2,10 +2,8 @@
 
 pragma solidity 0.8.9;
 
-/**
- * @dev Interface of the ERC20 standard as defined in the EIP.
- */
-interface IERC20 {
+
+interface IBEP20 {
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
      * another (`to`).
@@ -64,8 +62,7 @@ interface IERC20 {
      * that someone may use both the old and the new allowance by unfortunate
      * transaction ordering. One possible solution to mitigate this race
      * condition is to first reduce the spender's allowance to 0 and set the
-     * desired value afterwards:
-     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     * desired value afterwards
      *
      * Emits an {Approval} event.
      */
@@ -87,12 +84,8 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-/**
- * @dev Interface for the optional metadata functions from the ERC20 standard.
- *
- * _Available since v4.1._
- */
-interface IERC20Metadata is IERC20 {
+
+interface IBEP20Metadata is IBEP20 {
     /**
      * @dev Returns the name of the token.
      */
@@ -212,7 +205,7 @@ abstract contract Ownable is Context {
     }
 }
 
-contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
+contract BitcoinBSCToken is Context, IBEP20Metadata, Ownable {
     mapping(address => uint256) private _balances;
 
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -340,7 +333,7 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
         uint256 currentAllowance = _allowances[sender][_msgSender()];
         require(
             currentAllowance >= amount,
-            "ERC20: transfer amount exceeds allowance"
+            "BEP20: transfer amount exceeds allowance"
         );
         unchecked {
             _approve(sender, _msgSender(), currentAllowance - amount);
@@ -376,7 +369,7 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
         uint256 currentAllowance = _allowances[_msgSender()][to];
         require(
             currentAllowance >= subtractedValue,
-            "ERC20: decreased allowance below zero"
+            "BEP20: decreased allowance below zero"
         );
         unchecked {
             _approve(_msgSender(), to, currentAllowance - subtractedValue);
@@ -396,14 +389,14 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
         address recipient,
         uint256 amount
     ) internal virtual {
-        require(amount > 0, "ERC20: transfer amount zero");
-        require(sender != address(0), "ERC20: transfer from the zero address");
-        require(recipient != address(0), "ERC20: transfer to the zero address");
+        require(amount > 0, "BEP20: transfer amount zero");
+        require(sender != address(0), "BEP20: transfer from the zero address");
+        require(recipient != address(0), "BEP20: transfer to the zero address");
 
         uint256 senderBalance = _balances[sender];
         require(
             senderBalance >= amount,
-            "ERC20: transfer amount exceeds balance"
+            "BEP20: transfer amount exceeds balance"
         );
         unchecked {
             _balances[sender] = senderBalance - amount;
@@ -419,7 +412,7 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to create.
      */
     function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: mint to the zero address");
+        require(account != address(0), "BEP20: mint to the zero address");
 
         _totalSupply += amount;
         _balances[account] += amount;
@@ -432,10 +425,10 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to burn.
      */
     function _burn(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: burn from the zero address");
+        require(account != address(0), "BEP20: burn from the zero address");
 
         uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+        require(accountBalance >= amount, "BEP20: burn amount exceeds balance");
         unchecked {
             _balances[account] = accountBalance - amount;
         }
@@ -463,8 +456,8 @@ contract BitcoinBSCToken is Context, IERC20Metadata, Ownable {
         address to,
         uint256 amount
     ) internal virtual {
-        require(from != address(0), "ERC20: approve from the zero address");
-        require(to != address(0), "ERC20: approve to the zero address");
+        require(from != address(0), "BEP20: approve from the zero address");
+        require(to != address(0), "BEP20: approve to the zero address");
 
         _allowances[from][to] = amount;
         emit Approval(from, to, amount);
